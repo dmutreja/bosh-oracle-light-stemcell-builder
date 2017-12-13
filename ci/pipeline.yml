@@ -13,8 +13,6 @@ jobs:
        - {trigger: false, get: version,   params: {bump: minor}}
        - {trigger: true, get: light-stemcell-builder,   resource: bosh-oracle-light-stemcell-builder}
 
-
-
        - task: build-stemcell
          file: bosh-linux-stemcell-builder/ci/tasks/build.yml
          privileged: true
@@ -24,19 +22,14 @@ jobs:
            OS_NAME: ubuntu
            OS_VERSION: trusty
 
-       - task: prepare-oci-config
-         file: light-stemcell-builder/ci/tasks/prepare-oci-config.yml
+       - task: create-image-par
+         file: light-stemcell-builder/ci/tasks/create-image-par.yml
          params:
            oracle_tenancy: ((oracle-tenancy))
            oracle_user: ((oracle-user))
            oracle_region: ((oracle-region))
            oracle_fingerprint: ((oracle-fingerprint))
            oracle_apikey: ((oracle-apikey))
-
-       - task: create-image-par
-         file: light-stemcell-builder/ci/tasks/create-image-par.yml
-         params:
-           oracle_region: ((oracle-region))
            oracle_namespace: ((oracle-namespace))
            oracle_stemcell_bucket:  ((stemcell-bucket))
 
@@ -46,8 +39,12 @@ jobs:
            name: light-oracle-ubunty-trusty
            os: ubuntu-trusty
 
-#       - task: publish-light-stemcell
-#         file: stemcell-publisher/ci/tasks/publish-light-temcell.yml
+       - put: light-stemcell-bucket
+         params:
+           file: light-stemcell/light-oracle-ubunty-trusty-*.tgz
+
+       - put: version
+         params: {file: version/version}
 
 resources:
   - name: bosh-linux-stemcell-builder
@@ -85,3 +82,14 @@ resources:
       region_name: ((oracle-region))
       endpoint: https://((oracle-namespace)).compat.objectstorage.((oracle-region)).oraclecloud.com
       initial_version: 2001.0.0
+
+  - name: light-stemcell-bucket
+    type: s3
+    source:
+       endpoint: https://((oracle-namespace)).compat.objectstorage.((oracle-region)).oraclecloud.com
+       region_name: ((oracle-region))
+       bucket: ((stemcell-bucket))
+       regexp: light-oracle-ubunty-trusty-(.*)\.tgz
+       access_key_id: ((oracle-s3-access-key-id))
+       secret_access_key: ((oracle-s3-secret-access-key))
+       private: true

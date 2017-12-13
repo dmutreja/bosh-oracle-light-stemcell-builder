@@ -16,10 +16,33 @@ check_param oracle_stemcell_bucket
 
 pwd=`pwd`
 
+oci_config_dir="${pwd}/oci-config"
+mkdir -p ${oci_config_dir}
+
+# Prepare oci invocation environment
+oci_api_key="${oci_config_dir}/oci_api_key.pem"
+oci_config="$oci_config_dir/config"
+
+cat > ${oci_api_key} <<EOF
+${oracle_apikey}
+EOF
+
+cat > $oci_config <<EOF
+[DEFAULT]
+user=${oracle_user}
+tenancy=${oracle_tenancy}
+region=${oracle_region}
+key_file=${oci_api_key}
+fingerprint=${oracle_fingerprint}
+EOF
+
+chmod 600 ${oci_api_key}
+chmod 600 ${oci_config}
+
+
 #Inputs
 stemcell_version=$( cat version/number | sed 's/\.0$//;s/\.0$//' )
 full_stemcell_dir=${pwd}/stemcell
-oci_config=${pwd}/oci-config/config
 
 #Outputs
 image_par_dir=${pwd}/image-par
