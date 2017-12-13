@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -e
 
@@ -25,10 +25,10 @@ oci_config=${pwd}/oci-config/config
 image_par_dir=${pwd}/image-par
 
 
-full_stemcell=`ls -1 -rt  ${full_stemcell_dir}/*.tgz  | tail -1`
+full_stemcell=`ls -1rt  ${full_stemcell_dir}/*.tgz  | head -1`
 full_stemcell_name=`basename ${full_stemcell}`
 qcow2_image_name="root.img"
-versioned_image_name="${qcow2_image_name}-${stemcell_version}"
+versioned_image_name="root-${stemcell_version}.img"
 
 
 #Already uploaded?
@@ -43,7 +43,7 @@ if [ "$existing" == "" ]; then
     pushd ${workdir}
        tar xzvf ${full_stemcell}
        tar xzvf image
-       oci --config-file ${oci_config} os object put --name ${versioned_image_name} --file ${qcow2_image_name}
+       oci --config-file ${oci_config} os object put -ns ${oracle_namespace} -bn ${oracle_stemcell_bucket} --name ${versioned_image_name} --file ${qcow2_image_name}
     popd
 else
     echo "${versioned_image_name} already uploaded to object store"

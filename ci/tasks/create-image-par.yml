@@ -8,6 +8,7 @@ image_resource:
 inputs:
   - name: stemcell
   - name: version
+  - name: oci-config
   - name: light-stemcell-builder
 outputs:
   - name: image-par

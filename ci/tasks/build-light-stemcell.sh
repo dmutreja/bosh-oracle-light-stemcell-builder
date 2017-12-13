@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 set -e
 
@@ -41,8 +41,8 @@ stemcell_version=$( cat version/number | sed 's/\.0$//;s/\.0$//' )
 stemcell_name=${name}
 image_par_dir="image-par"
 
-imageurl_filepath=`ls -1 -rt  ${full_stemcell_dir}/*.url  | tail -1`
-image_src_url=$(<$imageurl_filepath)
+imageurl_filepath=`ls -1rt  ${image_par_dir}/*.url  | head -1`
+image_src_url=`cat ${imageurl_filepath}`
 
 #Outputs
 light_stemcell_dir=${pwd}/light-stemcell
@@ -51,12 +51,12 @@ workdir=${light_stemcell_dir}/tmp
 mkdir -p $workdir
 
 ## Create stemcell tarball structure
-tarfilename="${stemcell_name}-${stemcell_version}.tgz"
 createImageFile "$workdir/image"
 sha1=`sha1sum $workdir/image | cut -f1 -d" "`
 writeStemcellManifest "$workdir/stemcell.MF" ${stemcell_name} ${stemcell_version} ${sha1}  ${os} ${image_src_url}
 
 ## Create the tarball
-pushd $workdir
-  tar -zcvf ${tarfilename} image stemcell.MF && mv ${tarfilename} ..
-popd
+tar_filepath="${light_stemcell_dir}/${stemcell_name}-${stemcell_version}.tgz"
+tar -C ${workdir} -zcf ${tar_filepath} image stemcell.MF
+
+echo "Created ${tar_filepath}"
