@@ -1,0 +1,87 @@
+groups:
+ - name: light-oracle-ubuntu-stemcell
+   jobs:
+     - build-and-publish-stemcell
+
+
+jobs:
+   - name: build-and-publish-stemcell
+     serial: true
+     plan:
+       - {trigger: true, get: stemcells-index, resource: stemcells-index}
+       - {trigger: true, get: bosh-linux-stemcell-builder,   resource: bosh-linux-stemcell-builder}
+       - {trigger: false, get: version,   params: {bump: minor}}
+       - {trigger: true, get: light-stemcell-builder,   resource: bosh-oracle-light-stemcell-builder}
+
+
+
+       - task: build-stemcell
+         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
+         privileged: true
+         params:
+           IAAS: oracle
+           HYPERVISOR: kvm
+           OS_NAME: ubuntu
+           OS_VERSION: trusty
+
+       - task: prepare-oci-config
+         file: light-stemcell-builder/ci/tasks/prepare-oci-config.yml
+         params:
+           oracle_tenancy: ((oracle-tenancy))
+           oracle_user: ((oracle-user))
+           oracle_region: ((oracle-region))
+           oracle_fingerprint: ((oracle-fingerprint))
+           oracle_apikey: ((oracle-apikey))
+
+       - task: create-image-par
+         file: light-stemcell-builder/ci/tasks/create-image-par.yml
+         params:
+           oracle_region: ((oracle-region))
+           oracle_namespace: ((oracle-namespace))
+           oracle_stemcell_bucket:  ((stemcell-bucket))
+
+       - task: build-light-stemcell
+         file: light-stemcell-builder/ci/tasks/build-light-stemcell.yml
+         params:
+           name: light-oracle-ubunty-trusty
+           os: ubuntu-trusty
+
+#       - task: publish-light-stemcell
+#         file: stemcell-publisher/ci/tasks/publish-light-temcell.yml
+
+resources:
+  - name: bosh-linux-stemcell-builder
+    type: git
+    source:
+      uri: https://github.com/dmutreja/bosh-linux-stemcell-builder
+      branch: oracle_stemcell_feature
+      username: ((github-user))
+      password: ((github-password))
+
+  - name: stemcells-index
+    type: git
+    source:
+      uri:  https://github.com/dmutreja/stemcells-index.git
+      branch: master
+      username: ((github-user))
+      password: ((github-password))
+
+  - name: bosh-oracle-light-stemcell-builder
+    type: git
+    source:
+      uri: https://github.com/dmutreja/bosh-oracle-light-stemcell-builder
+      branch: master
+      username: ((github-user))
+      password: ((github-password))
+
+  - name: version
+    type: semver
+    source:
+      driver: s3
+      key: current-stemcell-version
+      bucket: ((version-semver-bucket-name))
+      access_key_id: ((oracle-s3-access-key-id))
+      secret_access_key: ((oracle-s3-secret-access-key))
+      region_name: ((oracle-region))
+      endpoint: https://((oracle-namespace)).compat.objectstorage.((oracle-region)).oraclecloud.com
+      initial_version: 2001.0.0

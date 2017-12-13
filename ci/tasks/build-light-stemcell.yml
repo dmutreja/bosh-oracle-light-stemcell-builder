@@ -1,0 +1,19 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: alpine
+    tag: "latest"
+inputs:
+  - name: version
+  - name: image-par
+  - name: light-stemcell-builder
+outputs:
+  - name: light-stemcell
+run:
+  path: light-stemcell-builder/ci/tasks/build-light-stemcell.sh
+params:
+   os: replace-me
+   name: replace-me
+
