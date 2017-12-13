@@ -36,12 +36,12 @@ jobs:
        - task: build-light-stemcell
          file: light-stemcell-builder/ci/tasks/build-light-stemcell.yml
          params:
-           name: light-oracle-ubunty-trusty
+           name: light-oracle-ubuntu-trusty
            os: ubuntu-trusty
 
        - put: light-stemcell-bucket
          params:
-           file: light-stemcell/light-oracle-ubunty-trusty-*.tgz
+           file: light-stemcell/light-oracle-ubuntu-trusty-*.tgz
 
        - put: version
          params: {file: version/version}
@@ -89,7 +89,7 @@ resources:
        endpoint: https://((oracle-namespace)).compat.objectstorage.((oracle-region)).oraclecloud.com
        region_name: ((oracle-region))
        bucket: ((stemcell-bucket))
-       regexp: light-oracle-ubunty-trusty-(.*)\.tgz
+       regexp: light-oracle-ubuntu-trusty-(.*)\.tgz
        access_key_id: ((oracle-s3-access-key-id))
        secret_access_key: ((oracle-s3-secret-access-key))
        private: true
