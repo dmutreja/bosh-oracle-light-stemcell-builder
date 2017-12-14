@@ -32,6 +32,7 @@ jobs:
            oracle_apikey: ((oracle-apikey))
            oracle_namespace: ((oracle-namespace))
            oracle_stemcell_bucket:  ((stemcell-bucket))
+           duration: ((light-stemcell-validity-duration))
 
        - task: build-light-stemcell
          file: light-stemcell-builder/ci/tasks/build-light-stemcell.yml
@@ -50,7 +51,7 @@ resources:
   - name: bosh-linux-stemcell-builder
     type: git
     source:
-      uri: https://github.com/dmutreja/bosh-linux-stemcell-builder
+      uri: https://github.com/oracle/bosh-linux-stemcell-builder
       branch: oracle_stemcell_feature
       username: ((github-user))
       password: ((github-password))

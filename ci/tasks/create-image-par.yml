@@ -13,6 +13,12 @@ outputs:
 run:
   path: light-stemcell-builder/ci/tasks/create-image-par.sh
 params:
+  oracle_tenancy: replace-me
+  oracle_user: replace-me
+  oracle_fingerprint: replace-me
+  oracle_apikey: replace-me
   oracle_region: replace-me
   oracle_namespace: replace-me
   oracle_stemcell_bucket:  replace-me
+  duration: replace-me
+

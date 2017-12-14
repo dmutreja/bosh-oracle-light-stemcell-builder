@@ -11,8 +11,14 @@ function check_param() {
   fi
 }
 
+check_param oracle_tenancy
+check_param oracle_user
+check_param oracle_apikey
+check_param oracle_fingerprint
+check_param oracle_region
 check_param oracle_namespace
 check_param oracle_stemcell_bucket
+check_param duration
 
 pwd=`pwd`
 
@@ -63,14 +69,12 @@ pushd ${workdir}
   versioned_image_name="${stemcell_name}-${stemcell_version}.img"
 
   #Already uploaded?
-  existing=`oci --config-file ${oci_config} os object list -ns ${oracle_namespace} -bn ${oracle_stemcell_bucket} | jq '.data | .[] | select(.name=="${versioned_image_name}") | .name'`
-
+  existing=`oci --config-file ${oci_config} os object list -ns ${oracle_namespace} -bn ${oracle_stemcell_bucket} | jq ".data | .[] | select(.name==\"${versioned_image_name}\") | .name"`
   #No,
-  if [ "$existing" == "" ]; then
-
+  if [ "ZZ$existing" == "ZZ" ]; then
     # Extract .qcow2 and upload it
     tar xzvf image
-    oci --config-file ${oci_config} os object put -ns ${oracle_namespace} -bn ${oracle_stemcell_bucket} --name ${versioned_image_name} --file ${qcow2_image_name}
+    oci --config-file ${oci_config} os object put -ns ${oracle_namespace} -bn ${oracle_stemcell_bucket} --force --name ${versioned_image_name} --file ${qcow2_image_name}
   else
         echo "${versioned_image_name} already uploaded to object store"
   fi
@@ -78,8 +82,9 @@ popd
 
 
 # Create a preauth-request
+expiry_date=`date -d "${duration}" "+%Y-%m-%d"`
 resp_json=${image_par_dir}/preauth-response.json
-oci --config-file ${oci_config} os preauth-request create -ns ${oracle_namespace} -bn ${oracle_stemcell_bucket} --access-type ObjectRead  --time-expires 2018-01-16 -on ${versioned_image_name} --name ${versioned_image_name} > ${resp_json}
+oci --config-file ${oci_config} os preauth-request create -ns ${oracle_namespace} -bn ${oracle_stemcell_bucket} --access-type ObjectRead  --time-expires ${expiry_date} -on ${versioned_image_name} --name ${versioned_image_name} > ${resp_json}
 
 # Create full url
 access_uri=`jq -r '.data."access-uri"' < ${resp_json}`
