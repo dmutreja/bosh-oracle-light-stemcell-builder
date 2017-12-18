@@ -1,0 +1,15 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: dmutreja/ubuntu-xenial-boshcliv2 
+    tag: "latest"
+inputs:
+  - name: terraform-state
+  - name: fixture-ssh-keys
+  - name: light-stemcell-builder
+outputs:
+  - name: director-env
+run:
+  path: light-stemcell-builder/ci/tasks/prepare-director-env.sh

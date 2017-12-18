@@ -22,7 +22,7 @@ check_param duration
 
 pwd=`pwd`
 
-oci_config_dir="${pwd}/oci-config"
+oci_config_dir="${pwd}/.oci"
 mkdir -p ${oci_config_dir}
 
 # Prepare oci invocation environment
@@ -89,6 +89,6 @@ oci --config-file ${oci_config} os preauth-request create -ns ${oracle_namespace
 # Create full url
 access_uri=`jq -r '.data."access-uri"' < ${resp_json}`
 preauth_url="https://objectstorage.${oracle_region}.oraclecloud.com${access_uri}"
-echo $preauth_url > ${image_par_dir}/{versioned_image_name}.url
+echo $preauth_url > ${image_par_dir}/${versioned_image_name}.url
 
-cat ${image_par_dir}/{versioned_image_name}.url
+cat ${image_par_dir}/${versioned_image_name}.url

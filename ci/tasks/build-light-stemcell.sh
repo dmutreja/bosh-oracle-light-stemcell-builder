@@ -37,7 +37,7 @@ check_param name
 pwd=`pwd`
 
 #Inputs
-stemcell_version=$( cat version/number | sed 's/\.0$//;s/\.0$//' )
+stemcell_version=$( cat stemcell-semver/number | sed 's/\.0$//;s/\.0$//' )
 stemcell_name=${name}
 image_par_dir="image-par"
 
