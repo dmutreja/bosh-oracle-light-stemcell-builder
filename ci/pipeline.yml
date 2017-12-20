@@ -55,7 +55,6 @@ groups:
  - name: light-oracle-ubuntu-stemcell
    jobs:
      - build-light-stemcell
-     - publish-light-stemcell
 
 
 jobs:
@@ -68,7 +67,7 @@ jobs:
          - {trigger: false, get: cpi-release-src, resource: bosh-cpi-release-src}
          - {trigger: false, get: cpi-release-semver}
          - {trigger: true, get: light-stemcell-builder,   resource: bosh-oracle-light-stemcell-builder}
-         - {trigger: false, get: stemcell-semver, params: {bump: minor}}
+         - {trigger: false, put: stemcell-semver, params: {bump: minor}}
          - {trigger: true, get: fixture-ssh-keys, resource: fixture-env, params: {file: oci-config.tgz, unpack: true}}
 
 
@@ -126,14 +125,6 @@ jobs:
        - put: light-stemcell-bucket
          params:
            file: light-stemcell/light-oracle-ubuntu-trusty-*.tgz
-
-   - name: publish-light-stemcell
-     serial: true
-     plan:
-       - {trigger: false, get: stemcell-semver}
-
-       - put: stemcell-semver
-         params: {file: stemcell-semver/version}
 
 resource_types:
   - name: terraform
