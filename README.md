@@ -28,7 +28,7 @@ Repository to build and publish a BOSH light stemcell
    ```
    * Fly execute the build-light-stemcell task 
    ```
-   $ echo 3445.7 > manual-build/version
+   $ echo 3445.7 > manual-build/number
    $ echo "https://objectstorage.us-phoenix-1.oraclecloud.com/p/qMODpf4LrFdnGeJ1l5B3UvxT0CVH1o_6psBp56wRb-Q/n/cloudfoundry/b/images/o/v0004.qcow2" > manual-build/candidate-0004-par.url 
    $ os=ubuntu-trusty name=light-oracle-ubuntu-trusty fly -t cpi execute -c ./ci/tasks/build-light-stemcell.yml -i stemcell-semver=manual-build -i image-par=manual-build -o light-stemcell=manual-build -i light-stemcell-builder=.
 
