@@ -41,7 +41,7 @@ stemcell_version=$( cat stemcell-semver/number | sed 's/\.0$//;s/\.0$//' )
 stemcell_name=${name}
 image_par_dir="image-par"
 
-imageurl_filepath=`ls -1rt  ${image_par_dir}/*.url  | head -1`
+imageurl_filepath=`ls -1rt  ${image_par_dir}/*.url  | tail -1`
 image_src_url=`cat ${imageurl_filepath}`
 
 #Outputs
