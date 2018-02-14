@@ -23,6 +23,8 @@ cloud_properties:
    name: $2
    version: "$3"
    image-source-url: $6
+stemcell_formats:
+- oracle-light
 MANIFEST
 
 }
