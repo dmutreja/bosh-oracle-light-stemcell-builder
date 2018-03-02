@@ -137,7 +137,7 @@ resources:
     type: git
     source:
       uri: https://github.com/oracle/bosh-linux-stemcell-builder
-      branch: oracle_stemcell_feature
+      branch: oracle_stemcell_base
       username: ((github-user))
       password: ((github-password))
 
